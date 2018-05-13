@@ -47,10 +47,14 @@ def report_train_val_changes(train_op_fn, steps=5):
 def do_update_ops_run(train_op_fn):
     graph = tf.Graph()
     with graph.as_default():
-        step = tf.Variable(initial_value=0, dtype=tf.int32, name='test_step')
+        step = tf.Variable(
+            initial_value=0, dtype=tf.int32, name='test_step', trainable=False)
         update_step = tf.assign_add(step, 1)
         tf.add_to_collection(tf.GraphKeys.UPDATE_OPS, update_step)
         train_op = train_op_fn()
+        ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+        if ops[0] == update_step and len(ops) == 1:
+            return None
 
     with tf.Session(graph=graph) as sess:
         sess.run(tf.global_variables_initializer())
