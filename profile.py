@@ -17,6 +17,24 @@ from progress.bar import IncrementalBar
 
 
 def create_profile(graph_fn, filename, skip_runs=10):
+    """
+    Creates a profile of running the graph defined in `graph_fn`.
+
+    Example usage:
+    ```
+    def graph_fn():
+        features, labels = get_inputs()
+        train_op = get_train_op(features, labels)
+        return train_op
+
+    create_profile(graph_fn, 'my_profile.json')
+    ```
+
+    Open chrome, navigate to `chrome://tracing` and load `my_profile.json`.
+
+    Note this requires the CUPTI/lib to be on your `LD_LIBRARY_PATH`, e.g.
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/extras/CUPTI/lib64/
+    """
     print('Building graph...')
     graph = tf.Graph()
     with graph.as_default():

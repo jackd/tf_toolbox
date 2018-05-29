@@ -33,11 +33,13 @@ create_profile(graph_fn, './profiles/example.json')
 ```
 Open chrome, navigate to `chrome://tracing`, hit `load` and navigate to `./profiles/example.json`.
 
+![Profiling output](images/profile.png)
+
 #### Testing
-We provide two basic tests: `train_val_changes` and `do_update_ops_run`. They come with printing version `report_train_val_changes` and `report_update_ops_run`, but you'll probably want to write wrappers for your own testing framework. See `report`ing mechanism in the [example](example/testing_example.py).
+We provide two basic tests: `train_val_changes` and `do_update_ops_run`. They come with printing version `report_train_val_changes` and `report_update_ops_run`, but you'll probably want to write wrappers for your own testing framework. See `report`ing mechanism in the [example](example/testing.py).
 
 #### Interpolation
-Bilinear interpolation. Not exactly testing/profiling... but see the [example](example/inter_example.py).
+Bilinear interpolation. See the [example](example/inter.py).
 
 #### Data
-Utilities for writing `tfrecords`.
+Utilities for writing/parsing `tfrecords`.
