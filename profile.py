@@ -16,7 +16,7 @@ from tensorflow.python.client import timeline
 from progress.bar import IncrementalBar
 
 
-def create_profile(graph_fn, filename, skip_runs=10):
+def create_profile(graph_fn, filename, skip_runs=10, config=None):
     """
     Creates a profile of running the graph defined in `graph_fn`.
 
@@ -42,7 +42,7 @@ def create_profile(graph_fn, filename, skip_runs=10):
     path = os.path.join(
         os.path.realpath(os.path.dirname(__file__)), filename)
     print('Starting session...')
-    with tf.Session(graph=graph) as sess:
+    with tf.Session(graph=graph, config=config) as sess:
         sess.run(tf.global_variables_initializer())
         print('Warming up...')
         if skip_runs > 0:
