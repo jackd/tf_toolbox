@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 
 
-def train_val_changes(train_op_fn, n_steps=5):
+def train_val_changes(train_op_fn, n_steps=5, config=None):
     """
     Determine which variables change, and which don't.
 
@@ -23,7 +23,7 @@ def train_val_changes(train_op_fn, n_steps=5):
         train_op = train_op_fn()
         trainable_vars = tf.trainable_variables()
 
-    with tf.Session(graph=graph) as sess:
+    with tf.Session(graph=graph, config=config) as sess:
         sess.run(tf.global_variables_initializer())
         vals = sess.run(trainable_vars)
         for i in range(n_steps):
@@ -40,9 +40,10 @@ def train_val_changes(train_op_fn, n_steps=5):
         return unchanged_names, changed_names
 
 
-def report_train_val_changes(train_op_fn, steps=5):
+def report_train_val_changes(train_op_fn, steps=5, config=None):
     """This wrapper around train_val_changes with printed output."""
-    unchanged_names, changed_names = train_val_changes(train_op_fn, steps)
+    unchanged_names, changed_names = train_val_changes(
+        train_op_fn, steps, config=config)
     n_unchanged = len(unchanged_names)
     n_changed = len(changed_names)
     n_total = n_unchanged + n_changed
@@ -59,7 +60,7 @@ def report_train_val_changes(train_op_fn, steps=5):
             print(name)
 
 
-def do_update_ops_run(train_op_fn):
+def do_update_ops_run(train_op_fn, config=None):
     """
     Determine whether all update ops are running by default.
 
@@ -103,7 +104,7 @@ def do_update_ops_run(train_op_fn):
         if ops[0] == update_step and len(ops) == 1:
             return None
 
-    with tf.Session(graph=graph) as sess:
+    with tf.Session(graph=graph, config=config) as sess:
         sess.run(tf.global_variables_initializer())
         sess.run(train_op)
         s = sess.run(step)
@@ -111,9 +112,9 @@ def do_update_ops_run(train_op_fn):
     return s == 1
 
 
-def report_update_ops_run(train_op_fn):
+def report_update_ops_run(train_op_fn, config=None):
     """This wrapper around do_update_ops_run with printing."""
-    s = do_update_ops_run(train_op_fn)
+    s = do_update_ops_run(train_op_fn, config=config)
     if s is None:
         print('No UPDATE_OPS created by `train_op_fn`')
     elif s:
