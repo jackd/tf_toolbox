@@ -1,3 +1,9 @@
+#!/usr/bin/python
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import tensorflow as tf
 from tf_toolbox.interp import bilinear_interp
 
@@ -51,6 +57,29 @@ def example3d_batched():
     print(interp_vals)
 
 
+def test_batched(n_dims=3):
+    import numpy as np
+    from scipy.ndimage import map_coordinates
+    batch_size = 4
+    n_samples = 13
+    grid_size = np.random.randint(5, 10, size=n_dims)
+    print(grid_size)
+    grid = np.random.randn(batch_size, *grid_size).astype(np.float32)
+    coords = np.random.rand(batch_size, n_samples, n_dims)
+    coords *= grid_size
+    coords = coords.astype(np.int32)
+    gt = []
+    for (i, d) in zip(coords, grid):
+        gt.append(map_coordinates(d, i.T, order=2))
+    gt = np.stack(gt, axis=0)
+    actual = np.array(bilinear_interp(grid, coords))
+    print(np.max(np.abs(actual - gt)))
+    print(np.max(np.abs(gt)))
+
+
 # example1d()
 # example3d()
-example3d_batched()
+# example3d_batched()
+test_batched(3)
+test_batched(4)
+test_batched(5)
