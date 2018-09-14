@@ -60,10 +60,9 @@ def example3d_batched():
 def test_batched(n_dims=3):
     import numpy as np
     from scipy.ndimage import map_coordinates
-    batch_size = 4
+    batch_size = 7
     n_samples = 13
     grid_size = np.random.randint(5, 10, size=n_dims)
-    print(grid_size)
     grid = np.random.randn(batch_size, *grid_size).astype(np.float32)
     coords = np.random.rand(batch_size, n_samples, n_dims)
     coords *= grid_size
