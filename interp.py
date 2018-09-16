@@ -64,21 +64,22 @@ def get_bilinear_coords_and_factors(
     return corner_coords, factors
 
 
+def fix_batched_indices_for_gather(coords):
+    batch_size = tf.shape(coords)[0]
+    batch_index = tf.range(batch_size, dtype=tf.int32)
+    other_dims = coords.shape.as_list()[1:-1]
+    for _ in range(len(other_dims)+1):
+        batch_index = tf.expand_dims(batch_index, axis=-1)
+    batch_index = tf.tile(batch_index, [1] + other_dims + [1])
+    return tf.concat([batch_index, coords], axis=-1)
+
+
 def fix_coords_for_gather(coords, value_rank):
     n_dim = coords.shape[-1].value
     if n_dim == value_rank:
         return coords
     elif n_dim == value_rank - 1:
-        shape = tf.shape(coords)
-        batch_size = shape[0]
-        n_points = shape[1]
-        n_dims = shape[3]
-        batch_index = tf.tile(
-            tf.reshape(
-                tf.range(batch_size, dtype=tf.int32), (-1, 1, 1)),
-            (1, n_points, 2**n_dims))
-        batch_index = tf.expand_dims(batch_index, axis=-1)
-        return tf.concat([batch_index, coords], axis=-1)
+        return fix_batched_indices_for_gather(coords)
     else:
         raise ValueError(
             'coords must have rank %d or %d for value_rank %d, got %d'
